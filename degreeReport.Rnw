@@ -1,0 +1,114 @@
+\documentclass{article}
+\usepackage[english]{babel}  														
+\usepackage[protrusion=true,expansion=true]{microtype}	
+\usepackage{url}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{grffile}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[vmargin=.5in,hmargin=1in]{geometry}
+
+\begin{document}
+<<setup, include=FALSE>>=
+setwd(wDir)
+
+library('igraph', warn.conflicts = FALSE, quietly=TRUE)
+library('xtable', warn.conflicts = FALSE, quietly=TRUE)
+require("stats4", warn.conflicts = FALSE, quietly=TRUE)
+require("VGAM", warn.conflicts = FALSE, quietly=TRUE)
+
+graphData <- read.csv(file=gPath, sep=sGraph)
+g <- graph.data.frame(graphData, directed = F)
+globalClustCoeff <- round(transitivity(g, type=c('undirected')), 4)
+avgClustCoeff <- round(transitivity(g, type=c('average')), 4)
+assortativeDegree <- round(assortativity.degree (g, directed = F), 4)
+assortativeNominal <- round(assortativity.nominal(g, types=as.numeric(V(g)), directed = F), 4)
+ 
+data <- read.table(file = degreePath, header=F)
+data.ecdf <- ecdf(data$V1)
+data.mean <- round(mean(data$V1), 4)
+data.median <- median(data$V1)
+data.max <- max(data$V1)
+data.min <- min(data$V1)
+M <- sum(data$V1)
+N <- length(data$V1)
+M_prime <-sum(log(data$V1))
+ 
+graphProperties <- matrix(nrow = 1, ncol = 5)
+graphProperties[1, ] <- c(N, globalClustCoeff, avgClustCoeff, assortativeDegree, assortativeNominal) 
+colnames(graphProperties) <- c("N", "Global Clustering Coeff.", "Average Cluster Coeff.", "Assort. Degree", "Assort. Nominal")
+rownames(graphProperties) <-c('')
+ 
+degreeProperties <- matrix(nrow = 1, ncol = 4)
+degreeProperties[1, ] <- c(data.min, data.max, data.mean, data.median) 
+colnames(degreeProperties) <- c("Min", "Max", "Mean", "Median")
+rownames(degreeProperties) <-c('')
+@
+Graph properties:\\
+<<gp, echo = FALSE, results = 'asis'>>=
+print.xtable(xtable(graphProperties, digits = c(0,0,4,4,4,4), caption = "Summary of the principal graph properties.", label="gp", align="cccccc"), include.rownames = F, table.placement = 'H')
+@
+
+Degree properties:\\
+<<dp, echo = FALSE, results = 'asis'>>=
+print.xtable(xtable(degreeProperties, digits = c(0,0,0,4,4), caption = "Summary of the principal degree properties.", label="dp", align="ccccc"), include.rownames = F, table.placement = 'H')
+@
+
+AIC values:\\
+<<aic, echo = FALSE, results = 'asis', warning=FALSE>>=
+source('estimationFunctions.R')
+aicMatrix <- matrix(nrow = 1, ncol = 7)
+aicValues <- write_AIC_Values(netName)
+aicMatrix[1, ] <- c(netName,aicValues)
+colnames(aicMatrix) <- c("Network", "Geometric D.", "Poisson D.", "Zeta non-free p", "Zeta", "Right-Truncated Zeta", "Altamann D.")
+rownames(aicMatrix) <-c('')
+print.xtable(xtable(aicMatrix, digits = c(0,0,4,4,4,4,4,4), caption = "Values of the AIC.", label="aic", align="cccccccc"), include.rownames = F, table.placement = 'H')
+@ 
+  
+$\Delta$AIC:\\
+<<daic, echo = FALSE, results = 'asis', warning=FALSE>>=
+deltaMatrix <- matrix(nrow = 1, ncol = 7)
+aicV <- aicValues
+deltaMatrix[1, ] <- c(netName, as.numeric(getDeltaValues(aicV)))
+colnames(deltaMatrix) <- c("Network", "Geometric D.", "Poisson D.", "Zeta non-free p", "Zeta", "Right-Truncated Zeta", "Altamann D.")
+rownames(deltaMatrix) <-c('')
+print.xtable(xtable(deltaMatrix, digits = 4, caption = "Values of the Delta AIC.", label="daic", align="cccccccc"), include.rownames = F, table.placement = 'H')
+@
+  
+Estimated parameters:\\
+<<est, echo = FALSE, results = 'asis', warning=FALSE>>=
+paramsMatrix <- matrix(nrow = 1, ncol = 8)
+paramsMatrix[1, ] <- c(netName, write_parameters(""))
+colnames(paramsMatrix) <- c("Network", "q", "lambda", "gamma_1", "gamma_2", "K_max", "gamma_3", "delta")
+rownames(deltaMatrix) <-c('')
+print.xtable(xtable(paramsMatrix, digits = 4, caption = "Values of the estimated parameters.", label="est", align="ccccccccc"), include.rownames = F, table.placement = 'H')
+
+save(graphProperties, degreeProperties, aicMatrix, deltaMatrix, paramsMatrix, file=sprintf('./data_%s.RData', netName))
+@
+
+<<barplots, fig.pos='H', fig.cap='Initial plots.', fig.lp='fig:bplots', fig.align='center', echo=FALSE, out.width='0.9\\paperwidth'>>=
+spectrumTable <- table(data$V1)
+par(mfrow = c(3,2), mai=c(.5,.5,.9,.5))
+barplot(spectrumTable, main="Degree spectrum", cex.main = 0.9, cex.axis = .8)
+barplot(spectrumTable, log='xy', main = 'Degree spectrum log-log scale', cex.main = 0.9,cex.axis = .8)
+plot(sort(data$V1, decreasing =T), type='l', main="Degree sequence", xlab="Degree", ylab='', cex.main = 0.9, cex.axis = .8, cex.lab=.8)
+plot(sort(data$V1, decreasing =T), log = "xy", type = 'l', xlab="Degree", ylab='',
+     main="Degree sequence log-log scale",cex.main = 0.9, cex.axis = .8, cex.lab=.8)
+plot(sort(data.ecdf(knots(data.ecdf)),decreasing=T), main="Empirical distribution", 
+     type='l', xlab="Degree", ylab='',cex.main = 0.9, cex.axis = .8, cex.lab=.8)
+title(main = "Initial plots", outer = T, line=-1)
+@
+
+Fitted model plots:\\
+<<bestModel, fig.pos='H', echo=FALSE, fig.cap="Best Model Fitting the data.",  fig.lp='bestM', out.width='0.5\\paperwidth', warning=FALSE, fig.align='center'>>=
+data_frame <- data.frame(spectrumTable)
+freq <- as.numeric(as.matrix(data_frame["Freq"]))
+degrees <- as.numeric(as.matrix(data_frame["Var1"]))
+source('finalPlots.R')
+bestIndex <- which(deltaMatrix == "0")
+bestPlot(bestIndex-1, netName, degrees, paramsMatrix)
+write_final_plots(netName, as.numeric(paramsMatrix[1,2]), as.numeric(paramsMatrix[1,3]), as.numeric(paramsMatrix[1,4]), as.numeric(paramsMatrix[1,5]), as.numeric(paramsMatrix[1,6]), as.numeric(paramsMatrix[1,7]), as.numeric(paramsMatrix[1,8]))  
+@
+
+\end{document}
