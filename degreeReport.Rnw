@@ -7,17 +7,12 @@
 \usepackage{grffile}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage{rotating}
 \usepackage[vmargin=.5in,hmargin=1in]{geometry}
 
 \begin{document}
-<<setup, include=FALSE>>=
+<<setup, include=FALSE, warning=FALSE>>=
 setwd(wDir)
-
-library('igraph', warn.conflicts = FALSE, quietly=TRUE)
-library('xtable', warn.conflicts = FALSE, quietly=TRUE)
-require("stats4", warn.conflicts = FALSE, quietly=TRUE)
-require("VGAM", warn.conflicts = FALSE, quietly=TRUE)
-
 graphData <- read.csv(file=gPath, sep=sGraph)
 g <- graph.data.frame(graphData, directed = F)
 globalClustCoeff <- round(transitivity(g, type=c('undirected')), 4)
@@ -46,49 +41,72 @@ colnames(degreeProperties) <- c("Min", "Max", "Mean", "Median")
 rownames(degreeProperties) <-c('')
 @
 Graph properties:\\
-<<gp, echo = FALSE, results = 'asis'>>=
+<<gp, echo = FALSE, results = 'asis', warning=FALSE>>=
 print.xtable(xtable(graphProperties, digits = c(0,0,4,4,4,4), caption = "Summary of the principal graph properties.", label="gp", align="cccccc"), include.rownames = F, table.placement = 'H')
 @
 
 Degree properties:\\
-<<dp, echo = FALSE, results = 'asis'>>=
+<<dp, echo = FALSE, results = 'asis', warning=FALSE>>=
 print.xtable(xtable(degreeProperties, digits = c(0,0,0,4,4), caption = "Summary of the principal degree properties.", label="dp", align="ccccc"), include.rownames = F, table.placement = 'H')
 @
 
 AIC values:\\
 <<aic, echo = FALSE, results = 'asis', warning=FALSE>>=
-source('estimationFunctions.R')
-aicMatrix <- matrix(nrow = 1, ncol = 7)
+spectrumTable <- table(data$V1)
+data_frame <- data.frame(spectrumTable)
+freq <- as.numeric(as.matrix(data_frame["Freq"]))
+degrees <- as.numeric(as.matrix(data_frame["Var1"]))
+source('estimation.R')
+aicMatrix <- matrix(nrow = 1, ncol = 10)
 aicValues <- write_AIC_Values(netName)
 aicMatrix[1, ] <- c(netName,aicValues)
-colnames(aicMatrix) <- c("Network", "Geometric D.", "Poisson D.", "Zeta non-free p", "Zeta", "Right-Truncated Zeta", "Altamann D.")
+colnames(aicMatrix) <- c("Network", "Geometric D.", "Poisson D.", "Zeta non-free p", "Zeta", "Right-Truncated Zeta", "Altamann D.", "MOEZipf", "Negative Binomial", "Discrete Weibull")#, "Zeta-Mandelbrot")
 rownames(aicMatrix) <-c('')
-print.xtable(xtable(aicMatrix, digits = c(0,0,4,4,4,4,4,4), caption = "Values of the AIC.", label="aic", align="cccccccc"), include.rownames = F, table.placement = 'H')
+print.xtable(xtable(aicMatrix, digits = c(0,0,4,4,4,4,4,4,4,4,4), caption = "Values of the AIC.", label="aic", align="ccccccccccc"), include.rownames = F, table.placement = 'H', scalebox=0.7)
 @ 
   
 $\Delta$AIC:\\
 <<daic, echo = FALSE, results = 'asis', warning=FALSE>>=
-deltaMatrix <- matrix(nrow = 1, ncol = 7)
+deltaMatrix <- matrix(nrow = 1, ncol = 10)
 aicV <- aicValues
 deltaMatrix[1, ] <- c(netName, as.numeric(getDeltaValues(aicV)))
-colnames(deltaMatrix) <- c("Network", "Geometric D.", "Poisson D.", "Zeta non-free p", "Zeta", "Right-Truncated Zeta", "Altamann D.")
+colnames(deltaMatrix) <- c("Network", "Geometric D.", "Poisson D.", "Zeta non-free p", "Zeta", "Right-Truncated Zeta", "Altamann D.", "MOEZipf", "Negative Binomial", "Discrete Weibull")#, "Zeta-Mandelbrot")
 rownames(deltaMatrix) <-c('')
-print.xtable(xtable(deltaMatrix, digits = 4, caption = "Values of the Delta AIC.", label="daic", align="cccccccc"), include.rownames = F, table.placement = 'H')
+print.xtable(xtable(deltaMatrix, digits = 4, caption = "Values of the Delta AIC.", label="daic", align="ccccccccccc"), include.rownames = F, table.placement = 'H', scalebox=0.7)
 @
-  
+
+BIC values:\\
+<<bic, echo = FALSE, results = 'asis', warning=FALSE>>=
+bicMatrix <- matrix(nrow = 1, ncol = 10)
+bicValues <- write_BIC_Values(netName)
+bicMatrix[1, ] <- c(netName, bicValues)
+colnames(bicMatrix) <- c("Network", "Geometric D.", "Poisson D.", "Zeta non-free p", "Zeta", "Right-Truncated Zeta", "Altamann D.", "MOEZipf", "Negative Binomial", "Discrete Weibull")#, "Zeta-Mandelbrot")
+rownames(bicMatrix) <-c('')
+print.xtable(xtable(bicMatrix, digits = c(0,0,4,4,4,4,4,4,4,4,4), caption = "Values of the BIC.", label="aic", align="ccccccccccc"), include.rownames = F, table.placement = 'H', scalebox=0.7)
+@ 
+
+$\Delta$BIC:\\
+<<dbic, echo = FALSE, results = 'asis', warning=FALSE>>=
+deltaBicMatrix <- matrix(nrow = 1, ncol = 10)
+bicV <- bicValues
+deltaBicMatrix[1, ] <- c(netName, as.numeric(getDeltaValues(bicV)))
+colnames(deltaBicMatrix) <- c("Network", "Geometric D.", "Poisson D.", "Zeta non-free p", "Zeta", "Right-Truncated Zeta", "Altamann D.", "MOEZipf", "Negative Binomial", "Discrete Weibull")#, "Zeta-Mandelbrot")
+rownames(deltaBicMatrix) <-c('')
+print.xtable(xtable(deltaBicMatrix, digits = 4, caption = "Values of the Delta BIC.", label="daic", align="ccccccccccc"), include.rownames = F, table.placement = 'H', scalebox=0.7)
+@
+
 Estimated parameters:\\
 <<est, echo = FALSE, results = 'asis', warning=FALSE>>=
-paramsMatrix <- matrix(nrow = 1, ncol = 8)
+paramsMatrix <- matrix(nrow = 1, ncol = 14)
 paramsMatrix[1, ] <- c(netName, write_parameters(""))
-colnames(paramsMatrix) <- c("Network", "q", "lambda", "gamma_1", "gamma_2", "K_max", "gamma_3", "delta")
+colnames(paramsMatrix) <- c("Network", "q", "lambda", "gamma_1", "gamma_2", "K_max", "gamma_3", "delta", "gamma_4", "delta_2", "gammaNB", "pNB", "v", "p")#, "rho", "a")
 rownames(deltaMatrix) <-c('')
-print.xtable(xtable(paramsMatrix, digits = 4, caption = "Values of the estimated parameters.", label="est", align="ccccccccc"), include.rownames = F, table.placement = 'H')
+print.xtable(xtable(paramsMatrix, digits = 4, caption = "Values of the estimated parameters.", label="est", align="ccccccccccccccc"), include.rownames = F, table.placement = 'H', scalebox=0.7)
 
 save(graphProperties, degreeProperties, aicMatrix, deltaMatrix, paramsMatrix, file=sprintf('./data_%s.RData', netName))
 @
 
-<<barplots, fig.pos='H', fig.cap='Initial plots.', fig.lp='fig:bplots', fig.align='center', echo=FALSE, out.width='0.9\\paperwidth'>>=
-spectrumTable <- table(data$V1)
+<<barplots, fig.pos='H', fig.cap='Initial plots.', fig.lp='fig:bplots', fig.align='center', echo=FALSE, out.width='0.9\\paperwidth', warning=FALSE>>=
 par(mfrow = c(3,2), mai=c(.5,.5,.9,.5))
 barplot(spectrumTable, main="Degree spectrum", cex.main = 0.9, cex.axis = .8)
 barplot(spectrumTable, log='xy', main = 'Degree spectrum log-log scale', cex.main = 0.9,cex.axis = .8)
@@ -102,13 +120,10 @@ title(main = "Initial plots", outer = T, line=-1)
 
 Fitted model plots:\\
 <<bestModel, fig.pos='H', echo=FALSE, fig.cap="Best Model Fitting the data.",  fig.lp='bestM', out.width='0.5\\paperwidth', warning=FALSE, fig.align='center'>>=
-data_frame <- data.frame(spectrumTable)
-freq <- as.numeric(as.matrix(data_frame["Freq"]))
-degrees <- as.numeric(as.matrix(data_frame["Var1"]))
 source('finalPlots.R')
 bestIndex <- which(deltaMatrix == "0")
 bestPlot(bestIndex-1, netName, degrees, paramsMatrix)
-write_final_plots(netName, as.numeric(paramsMatrix[1,2]), as.numeric(paramsMatrix[1,3]), as.numeric(paramsMatrix[1,4]), as.numeric(paramsMatrix[1,5]), as.numeric(paramsMatrix[1,6]), as.numeric(paramsMatrix[1,7]), as.numeric(paramsMatrix[1,8]))  
+write_final_plots(netName, as.numeric(paramsMatrix[1,2]), as.numeric(paramsMatrix[1,3]), as.numeric(paramsMatrix[1,4]), as.numeric(paramsMatrix[1,5]), as.numeric(paramsMatrix[1,6]), as.numeric(paramsMatrix[1,7]), as.numeric(paramsMatrix[1,8]), as.numeric(paramsMatrix[1,9]), as.numeric(paramsMatrix[1,10]), as.numeric(paramsMatrix[1,11]), as.numeric(paramsMatrix[1,12]), as.numeric(paramsMatrix[1,13])                                                                                                                                                                                                                                                                                      , as.numeric(paramsMatrix[1,14]))    
 @
 
 \end{document}
