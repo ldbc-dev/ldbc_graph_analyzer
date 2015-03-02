@@ -1,69 +1,42 @@
 #!/bin/bash
 
-SCRIPT=`basename ${BASH_SOURCE[0]}`
-OPT_DIR=$HOME
-OPT_GRAPH=G
-OPT_GRAPH_SEP=S
-OPT_DEGREE=D
-OPT_NNAME=N
+GRAPH_FILES=("./datasets/Amazon0302.txt" "./datasets/wiki-Talk.txt" "./datasets/cit-Patents.txt" "./datasets/person_knows_person_0_0.csv" "./datasets/web-NotreDame.txt" "./datasets/com-lj.ungraph.txt" "./datasets/com-youtube.ungraph.txt" "./datasets/com-dblp.ungraph.txt" "./datasets/roadNet-CA.txt" "./datasets/roadNet-TX.txt")
 
-NUMARGS=$#
-if [ $NUMARGS -ne 10 ]; then
-	echo -e \\n"Help documentation."\\n
-	echo -e "Basic usage:"\\n
-	echo "The following switches are recognized."
-	echo "	-w --Sets the working directory used. Default is HOME folder."
-	echo "	-g --Sets the path to the graph file."
-	echo "	-s --Sets the value for the separator used in the graph load process."
-	echo "	-d --Sets the path to the degree data file."
-	echo "	-n --Sets the name of the network."
-	echo -e "-h --Displays this help message. No further functions are performed."\\n
-    echo -e "Example: analyzer.sh -w working_directory -g graph_file_path -s separator -d degree_file_path -n network_name"\\n
-	exit 1
-fi
+DEGREE_FILES=("./datasets/amazonDegree.txt" "./datasets/wikiDegree.txt" "./datasets/citDegree.txt" "./datasets/personDegrees.csv" "./datasets/notreDameDegree.txt" "./datasets/livejournalDegree.txt" "./datasets/youtubeDegree.txt" "./datasets/dblpDegree.txt" "./datasets/roadnetCADegree.txt" "./datasets/roadnetTXDegree.txt")
 
-while getopts :w:g:s:d:n:h FLAG; do
-	case $FLAG in
-		w) OPT_DIR=$OPTARG
-		   ;;
-	    g) OPT_GRAPH=$OPTARG
-		   ;;
-		s) OPT_GRAPH_SEP=$OPTARG
-		   ;;
-		d) OPT_DEGREE=$OPTARG
-		   ;;
-		n) OPT_NNAME=$OPTARG
-		   ;;
-		*) echo -e "Use $SCRIPT -h to see the help documentation."\\n
-		   exit 2
-		   ;;
-	esac
-done
+SEP_CHARACTER=("\t" "\t" "\t" "|" "\t" "\t" "\t" "\t" "\t" "\t")
 
-shift $((OPTIND-1))
+DIRECTED=("T" "T" "T" "F" "T" "F" "F" "F" "F" "F")
+
+NET_NAMES=("Amazon" "Wikipedia" "Patents" "Person" "NotreDame" "Live_Journal" "Youtube" "DBLP_co_authorship" "CA_Road_Net" "TX_Road_Net")
 
 BASE_DIR=`pwd`
-OUT_DIR="${BASE_DIR}/nets/$OPT_NNAME"
 
-if [ ! -d $OUT_DIR ]; then
-	mkdir -p ./nets/$OPT_NNAME
-fi
+for ((i=0; i < ${#GRAPH_FILES[@]}; i++))
+do
+	echo "----- Processing network ${NET_NAMES[$i]} -----"
+	OUT_DIR="${BASE_DIR}/nets/${NET_NAMES[$i]}"
+	echo 
+	if [ ! -d $OUT_DIR ]; then
+		mkdir -p ./nets/${NET_NAMES[$i]}
+	fi
 
-Rscript genReport.R --args $OPT_DIR $OPT_GRAPH $OPT_GRAPH_SEP $OPT_DEGREE $OPT_NNAME 
+	Rscript genReport.R --args $BASE_DIR ${GRAPH_FILES[$i]} ${SEP_CHARACTER[$i]} ${DEGREE_FILES[$i]} ${NET_NAMES[$i]} ${DIRECTED[$i]} #1> log${NET_NAMES[$i]}.txt
 
-OUTPUT=${OUT_DIR}/${OPT_NNAME}Report
+	OUTPUT=${OUT_DIR}/${NET_NAMES[$i]}Report
+	mv degreeReport.tex ${OUTPUT}.tex
 
+	if [ -d ${OUT_DIR}/figure ]; then
+		rm -rfv ${OUT_DIR}/figure
+	fi
 
-mv degreeReport.tex ${OUTPUT}.tex
-
-if [ -d ${OUT_DIR}/figure ]; then
-	rm -rfv ${OUT_DIR}/figure
-fi
-
-mv -f figure/ $OUT_DIR
-mv data_${OPT_NNAME}.RData $OUT_DIR
-
-rm *.log *.aux *.pdf
-cd $OUT_DIR
-pdflatex ${OPT_NNAME}Report.tex
-mutt -s "${OPT_NNAME} Graph Analysis" -a "${OUTPUT}.pdf" -- aduarte@ac.upc.edu < /dev/null
+	mv -f figure/ $OUT_DIR
+	mv data_${NET_NAMES[$i]}.RData $OUT_DIR
+	rm *.log *.aux *.pdf
+	cd $OUT_DIR
+	pdflatex ${NET_NAMES[$i]}Report.tex
+	mutt -s "${NET_NAMES[$i]} Graph Analysis" -a "${OUTPUT}.pdf" -- aduarte@ac.upc.edu < /dev/null
+	cd ${BASE_DIR}
+	echo "---------------Graph processed--------------"
+	echo
+done

@@ -1,4 +1,3 @@
-library(knitr)
 args <- commandArgs(TRUE)
 if (length(args) < 5) stop("Bad args, usage refdir cmpdir")
 
@@ -9,6 +8,14 @@ gPath <- args[3]
 sGraph <- parse(text=paste0("'", args[4], "'"))[[1]]
 degreePath <- args[5]
 netName <- args[6]
+direct <- args[7]
+
+library('knitr', warn.conflicts = FALSE, quietly=TRUE)
+library('igraph', warn.conflicts = FALSE, quietly=TRUE)
+library('xtable', warn.conflicts = FALSE, quietly=TRUE)
+library('VGAM', warn.conflicts = FALSE, quietly=TRUE)
+library('stats4', warn.conflicts = FALSE, quietly=TRUE)
+
 # print("all ok")
 # 
 print(gPath)

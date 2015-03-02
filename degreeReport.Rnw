@@ -14,11 +14,13 @@
 <<setup, include=FALSE, warning=FALSE>>=
 setwd(wDir)
 graphData <- read.csv(file=gPath, sep=sGraph)
-g <- graph.data.frame(graphData, directed = F)
-globalClustCoeff <- round(transitivity(g, type=c('undirected')), 4)
-avgClustCoeff <- round(transitivity(g, type=c('average')), 4)
-assortativeDegree <- round(assortativity.degree (g, directed = F), 4)
-assortativeNominal <- round(assortativity.nominal(g, types=as.numeric(V(g)), directed = F), 4)
+g <- graph.data.frame(graphData, directed = direct)
+globalClustCoeff <- round(transitivity(g, type=c('global'), isolates = c('zero')), 4)
+avgClustCoeff <- round(transitivity(g, type=c('average'), isolates = c('zero')), 4)
+assortativeDegree <- round(assortativity.degree (g, directed = direct), 4)
+assortativeNominal <- round(assortativity.nominal(g, types=as.numeric(V(g)), directed = direct), 4)
+nbrNodes <- vcount(g)
+nbrEdges <- ecount(g)
  
 data <- read.table(file = degreePath, header=F)
 data.ecdf <- ecdf(data$V1)
@@ -30,10 +32,11 @@ M <- sum(data$V1)
 N <- length(data$V1)
 M_prime <-sum(log(data$V1))
  
-graphProperties <- matrix(nrow = 1, ncol = 5)
-graphProperties[1, ] <- c(N, globalClustCoeff, avgClustCoeff, assortativeDegree, assortativeNominal) 
-colnames(graphProperties) <- c("N", "Global Clustering Coeff.", "Average Cluster Coeff.", "Assort. Degree", "Assort. Nominal")
+graphProperties <- matrix(nrow = 1, ncol = 6)
+graphProperties[1, ] <- c(nbrNodes, nbrEdges, globalClustCoeff, avgClustCoeff, assortativeDegree, assortativeNominal) 
+colnames(graphProperties) <- c("Nodes", "Edges", "Global Clustering Coeff.", "Average Cluster Coeff.", "Assort. Degree", "Assort. Nominal")
 rownames(graphProperties) <-c('')
+rm(g)
  
 degreeProperties <- matrix(nrow = 1, ncol = 4)
 degreeProperties[1, ] <- c(data.min, data.max, data.mean, data.median) 
@@ -42,7 +45,7 @@ rownames(degreeProperties) <-c('')
 @
 Graph properties:\\
 <<gp, echo = FALSE, results = 'asis', warning=FALSE>>=
-print.xtable(xtable(graphProperties, digits = c(0,0,4,4,4,4), caption = "Summary of the principal graph properties.", label="gp", align="cccccc"), include.rownames = F, table.placement = 'H')
+print.xtable(xtable(graphProperties, digits = c(0,0,0,4,4,4,4), caption = "Summary of the principal graph properties.", label="gp", align="ccccccc"), include.rownames = F, table.placement = 'H')
 @
 
 Degree properties:\\

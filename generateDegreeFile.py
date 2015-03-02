@@ -6,6 +6,12 @@ import time as _time
 knowsFile = open(sys.argv[1],'r')
 
 edgesPerPerson={}
+inDegree = None
+
+if sys.args[3]:
+	inDegree = {}
+
+
 SEPARATOR="\t"
 index=0
 numEdges=0;
@@ -17,13 +23,31 @@ for line in knowsFile.readlines():
                 edgesPerPerson[int(edge[0])]+=1
             else:
                 edgesPerPerson[int(edge[0])]=1
+
+            if inDegree !=None:            	
+	            if int(edge[1]) in inDegree:
+	                inDegree[int(edge[1])]+=1
+	            else:
+	                inDegree[int(edge[1])]=1
+
             numEdges+=1
         index+=1   
 knowsFile.close()
 
-outputFile = open(sys.argv[2],'w')
+outDegreeFile = open(sys.argv[2],'w')
 histogram = {}
 for person in edgesPerPerson:
     degree = edgesPerPerson[person]
-    outputFile.write(str(degree)+"\n")
-outputFile.close()
+    outDegreeFile.write(str(degree)+"\n")
+outDegreeFile.close()
+
+if inDegree != None:
+	inDegreeFile = open(sys.argv[4],'w')
+	histogram = {}
+	for node in inDegree:
+	    degree = inDegree[node]
+	    inDegreeFile.write(str(degree)+"\n")
+	inDegreeFile.close()
+
+
+

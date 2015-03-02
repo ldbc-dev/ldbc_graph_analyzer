@@ -14,8 +14,8 @@ getGeometricMLE <- function(qInitValue, lowerBound, upperBound = c(Inf)) {
                          upper = upperBound) 
   },
   error = function(e) {      
-    print(e$message)
-    cat("\n")
+#    print(e$message)
+#    cat("\n")
   }
   )
   return(mle_geometric)
@@ -55,8 +55,8 @@ getPoissonMLE <- function(pInitValue, lowerBound, upperBound = c(Inf)) {
                        upper = upperBound)
   },
   error = function(e) {      
-    print(e$message)
-    cat("\n")
+#    print(e$message)
+#    cat("\n")
   }
   )
   return(mle_poisson)
@@ -84,8 +84,8 @@ getZetaMLE <- function(gInitValue, lowerBound, upperBound = c(Inf)) {
                     upper = upperBound)
   },
   error = function(e) {      
-    print(e$message)
-    cat("\n")
+#    print(e$message)
+#    cat("\n")
   }
   )
   return(mle_zeta)
@@ -116,8 +116,8 @@ getRightTruncZetaMLE <- function(gInitValue, kmaxInitValue, lowerBound, upperBou
                                     upper = upperBound)
   },
   error = function(e) {      
-    print(e$message)
-    cat("\n")
+#    print(e$message)
+#    cat("\n")
   }
   )
   return(mle_right_truncated_zeta)
@@ -148,8 +148,8 @@ getAltmannMLE <- function(gInitValue, dInitValue, lowerBound, upperBound = c(Inf
                        upper = upperBound)  
   },
   error = function(e) {      
-    print(e$message)
-    cat("\n")
+#    print(e$message)
+#    cat("\n")
   }
   )
   return(mle_Altmann)
@@ -178,8 +178,8 @@ getMOEZipfMLE <- function(gInitValue, dInitValue, lowerBound, upperBound = c(Inf
                        upper = upperBound)    
   },
   error = function(e) {      
-    print(e$message)
-    cat("\n")
+#    print(e$message)
+#    cat("\n")
   }
   )
   return(mle_MOEZipf)
@@ -205,8 +205,8 @@ getNBMLE <- function(gInitValue, pInitValue, lowerBound, upperBound = c(Inf, Inf
     
   },
   error = function(e) {      
-    print(e$message)
-    cat("\n")
+#    print(e$message)
+#    cat("\n")
   }
   )
   return(mle_NB)
@@ -229,8 +229,8 @@ getDWeibullMLE <- function(vInitValue, pInitValue, lowerBound, upperBound = c(In
     
   },
   error = function(e) {      
-    print(e$message)
-    cat("\n")
+#    print(e$message)
+#    cat("\n")
   }
   )
   return(mle_DWeibull)
