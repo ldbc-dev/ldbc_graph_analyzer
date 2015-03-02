@@ -194,10 +194,18 @@ NB <- function(gamma, p){
   -(P - S - N*log(gamma(gamma)) + M*log(p) + gamma*N*log(1-p))  
 }
 
+
+Nb <- function(gamma, p){
+  P <- sum(lgamma(gamma + degrees) * freq)
+  S <- sum(lfactorial(degrees)* freq)
+  -(P - Q - N*log(gamma(gamma)) + M*log(p) + N*gamma*log(1-p) - N*log(1-(1-p)^gamma))
+}
+
+
 getNBMLE <- function(gInitValue, pInitValue, lowerBound, upperBound = c(Inf, Inf)) {
   mle_NB <- NULL  
   tryCatch( {    
-   mle_NB <- mle(NB,
+   mle_NB <- mle(Nb,#NB,
                   start = list(gamma = gInitValue, p = pInitValue),
                   method = "L-BFGS-B", 
                   lower = lowerBound,
