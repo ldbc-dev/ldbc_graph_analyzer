@@ -155,7 +155,7 @@ getLegendData <- function(q, lambda, gamma1, gamma2, kMax, gamma3, delta, gamma4
 #   "darkgreen", "blue4", "darkorange", "darkturquoise", "mediumseagreen")
 
 write_final_plots <- function(language, q, lambda, gamma1, gamma2, kMax, gamma3, delta, gamma4, delta2, gammaNB, pNB, v, p){
-  plot(degrees, sort(freq, decreasing=T), log="xy", type="l", xlab="Degree", ylab="Frequency")
+  plot(degrees, freq, log="xy", type="p", xlab="Degree", ylab="Frequency", pch=20)
   title(language)
   lengendData <- getLegendData(q, lambda, gamma1, gamma2, kMax, gamma3, delta, gamma4, delta2, gammaNB, pNB, v, p)
   legend(grconvertX(0.85,'nfc'), grconvertY(0.8,'nfc'), xjust=0.85, yjust=0.8, 
@@ -208,8 +208,8 @@ write_final_plots <- function(language, q, lambda, gamma1, gamma2, kMax, gamma3,
   }
 }
 
-bestPlot <- function(bestIndex, name, degrees, paramsValues){
-  plot(degrees, sort(freq, decreasing=T), log="xy", type="l", xlab="Degree", ylab="Frequency", main = name)  
+bestPlot <- function(bestIndex, name, paramsValues){
+  plot(degrees, freq, log="xy", type="p", xlab="Degree", ylab="Frequency", main = name, pch=20)  
   if(bestIndex == 1){
     geo <- get_geometric_line(N, as.numeric(paramsValues[1,2]), degrees)
     lines(degrees, geo, col="limegreen")

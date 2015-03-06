@@ -14,15 +14,14 @@ getGeometricMLE <- function(qInitValue, lowerBound, upperBound = c(Inf)) {
                          upper = upperBound) 
   },
   error = function(e) {      
-#    print(e$message)
-#    cat("\n")
+   # print(e$message)
+   # cat("\n")
   }
   )
   return(mle_geometric)
 }
 
 # Displaced Poisson -------------------------------------------------------
-
 get_C <- function(data){
   result <- 0
   for(i in 1:N){  
@@ -55,8 +54,8 @@ getPoissonMLE <- function(pInitValue, lowerBound, upperBound = c(Inf)) {
                        upper = upperBound)
   },
   error = function(e) {      
-#    print(e$message)
-#    cat("\n")
+   print(e$message)
+   cat("\n")
   }
   )
   return(mle_poisson)
@@ -84,8 +83,8 @@ getZetaMLE <- function(gInitValue, lowerBound, upperBound = c(Inf)) {
                     upper = upperBound)
   },
   error = function(e) {      
-#    print(e$message)
-#    cat("\n")
+   # print(e$message)
+  #  cat("\n")
   }
   )
   return(mle_zeta)
@@ -116,8 +115,8 @@ getRightTruncZetaMLE <- function(gInitValue, kmaxInitValue, lowerBound, upperBou
                                     upper = upperBound)
   },
   error = function(e) {      
-#    print(e$message)
-#    cat("\n")
+   # print(e$message)
+  #  cat("\n")
   }
   )
   return(mle_right_truncated_zeta)
@@ -148,8 +147,8 @@ getAltmannMLE <- function(gInitValue, dInitValue, lowerBound, upperBound = c(Inf
                        upper = upperBound)  
   },
   error = function(e) {      
-#    print(e$message)
-#    cat("\n")
+    #print(e$message)
+    #cat("\n")
   }
   )
   return(mle_Altmann)
@@ -178,8 +177,8 @@ getMOEZipfMLE <- function(gInitValue, dInitValue, lowerBound, upperBound = c(Inf
                        upper = upperBound)    
   },
   error = function(e) {      
-#    print(e$message)
-#    cat("\n")
+    #print(e$message)
+    #cat("\n")
   }
   )
   return(mle_MOEZipf)
@@ -193,19 +192,17 @@ NB <- function(gamma, p){
   S <- sum(lfactorial(degrees)* freq)
   -(P - S - N*log(gamma(gamma)) + M*log(p) + gamma*N*log(1-p))  
 }
-
-
 Nb <- function(gamma, p){
   P <- sum(lgamma(gamma + degrees) * freq)
   S <- sum(lfactorial(degrees)* freq)
-  -(P - Q - N*log(gamma(gamma)) + M*log(p) + N*gamma*log(1-p) - N*log(1-(1-p)^gamma))
+  -(P - S - N*log(gamma(gamma)) + M*log(p) + N*gamma*log(1-p) - N*log(1-(1-p)^gamma))
 }
 
 
 getNBMLE <- function(gInitValue, pInitValue, lowerBound, upperBound = c(Inf, Inf)) {
   mle_NB <- NULL  
   tryCatch( {    
-   mle_NB <- mle(Nb,#NB,
+    mle_NB <- mle(Nb,#NB,
                   start = list(gamma = gInitValue, p = pInitValue),
                   method = "L-BFGS-B", 
                   lower = lowerBound,
@@ -213,8 +210,8 @@ getNBMLE <- function(gInitValue, pInitValue, lowerBound, upperBound = c(Inf, Inf
     
   },
   error = function(e) {      
-#    print(e$message)
-#    cat("\n")
+    #    print(e$message)
+    #    cat("\n")
   }
   )
   return(mle_NB)
@@ -226,10 +223,14 @@ discreteWeibull <- function(v, p){
   -(sum(log(p^((data$V1)^(v)) - p^((data$V1 + 1)^(v)))))   
 }
 
+dW <- function(v, p){
+  -(sum(log(p^((data$V1 - 1)^(v)) - p^((data$V1)^(v)))))
+}
+
 getDWeibullMLE <- function(vInitValue, pInitValue, lowerBound, upperBound = c(Inf, Inf)) {
   mle_DWeibull <- NULL  
   tryCatch( {    
-    mle_DWeibull <- mle(discreteWeibull,
+    mle_DWeibull <- mle(dW,#discreteWeibull,
                         start = list(v = vInitValue, p = pInitValue),
                         method = "L-BFGS-B", 
                         lower = lowerBound,
@@ -237,8 +238,8 @@ getDWeibullMLE <- function(vInitValue, pInitValue, lowerBound, upperBound = c(In
     
   },
   error = function(e) {      
-#    print(e$message)
-#    cat("\n")
+   # print(e$message)
+  #  cat("\n")
   }
   )
   return(mle_DWeibull)

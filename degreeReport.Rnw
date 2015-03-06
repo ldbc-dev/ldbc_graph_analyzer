@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage[english]{babel}  														
+\usepackage[english]{babel}    													
 \usepackage[protrusion=true,expansion=true]{microtype}	
 \usepackage{url}
 \usepackage{float}
@@ -28,6 +28,9 @@ data.mean <- round(mean(data$V1), 4)
 data.median <- median(data$V1)
 data.max <- max(data$V1)
 data.min <- min(data$V1)
+data.var <- var(data$V1)
+data.sd <- sd(data$V1)
+
 M <- sum(data$V1)
 N <- length(data$V1)
 M_prime <-sum(log(data$V1))
@@ -38,9 +41,9 @@ colnames(graphProperties) <- c("Nodes", "Edges", "Global Clustering Coeff.", "Av
 rownames(graphProperties) <-c('')
 rm(g)
  
-degreeProperties <- matrix(nrow = 1, ncol = 4)
-degreeProperties[1, ] <- c(data.min, data.max, data.mean, data.median) 
-colnames(degreeProperties) <- c("Min", "Max", "Mean", "Median")
+degreeProperties <- matrix(nrow = 1, ncol = 6)
+degreeProperties[1, ] <- c(data.min, data.max, data.mean, data.median, data.var, data.sd) 
+colnames(degreeProperties) <- c("Min", "Max", "Mean", "Median", "Variance", "Standard Deviation")
 rownames(degreeProperties) <-c('')
 @
 Graph properties:\\
@@ -50,7 +53,7 @@ print.xtable(xtable(graphProperties, digits = c(0,0,0,4,4,4,4), caption = "Summa
 
 Degree properties:\\
 <<dp, echo = FALSE, results = 'asis', warning=FALSE>>=
-print.xtable(xtable(degreeProperties, digits = c(0,0,0,4,4), caption = "Summary of the principal degree properties.", label="dp", align="ccccc"), include.rownames = F, table.placement = 'H')
+print.xtable(xtable(degreeProperties, digits = c(0,0,0,4,4,4,4), caption = "Summary of the principal degree properties.", label="dp", align="ccccccc"), include.rownames = F, table.placement = 'H')
 @
 
 AIC values:\\
@@ -123,9 +126,10 @@ title(main = "Initial plots", outer = T, line=-1)
 
 Fitted model plots:\\
 <<bestModel, fig.pos='H', echo=FALSE, fig.cap="Best Model Fitting the data.",  fig.lp='bestM', out.width='0.5\\paperwidth', warning=FALSE, fig.align='center'>>=
+boxplot(data$V1, main = "Degree distribution")
 source('finalPlots.R')
 bestIndex <- which(deltaMatrix == "0")
-bestPlot(bestIndex-1, netName, degrees, paramsMatrix)
+bestPlot(bestIndex-1, netName, paramsMatrix)
 write_final_plots(netName, as.numeric(paramsMatrix[1,2]), as.numeric(paramsMatrix[1,3]), as.numeric(paramsMatrix[1,4]), as.numeric(paramsMatrix[1,5]), as.numeric(paramsMatrix[1,6]), as.numeric(paramsMatrix[1,7]), as.numeric(paramsMatrix[1,8]), as.numeric(paramsMatrix[1,9]), as.numeric(paramsMatrix[1,10]), as.numeric(paramsMatrix[1,11]), as.numeric(paramsMatrix[1,12]), as.numeric(paramsMatrix[1,13])                                                                                                                                                                                                                                                                                      , as.numeric(paramsMatrix[1,14]))    
 @
 

@@ -11,10 +11,12 @@ BASE_DIR=`pwd`
 for ((i=0; i < ${#GRAPH_FILES[@]}; i++))
 do
 
-	if ["${DIRECTED[$i]}" == "T"]; then
-		python generateDegreeFile.py ${GRAPH_FILES[$i]} "./datasets/out${NET_NAMES[$i]}Degrees.txt" "True" "./datasets/in${NET_NAMES[$i]}Degrees.txt"
+	if [ "${DIRECTED[$i]}" == "T" ]; then
+		python generateDegreeFile.py ${GRAPH_FILES[$i]} "./datasets/out${NET_NAMES[$i]}Degrees.txt" "./datasets/in${NET_NAMES[$i]}Degrees.txt"
+		#echo "Direct"
 	else
-		python generateDegreeFile.py ${GRAPH_FILES[$i]} "./datasets/out${NET_NAMES[$i]}Degrees.txt" "False" 
+		python generateDegreeFile.py ${GRAPH_FILES[$i]} "./datasets/out${NET_NAMES[$i]}Degrees.txt" 
+		#echo "undirected"
 	fi
 	echo "---------------Generate degree sequence file(s) for ${NET_NAMES[$i]}-------------"
 	echo

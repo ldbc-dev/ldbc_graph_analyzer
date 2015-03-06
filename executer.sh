@@ -1,14 +1,24 @@
 #!/bin/bash
 
-GRAPH_FILES=("./datasets/Amazon0302.txt" "./datasets/wiki-Talk.txt" "./datasets/cit-Patents.txt" "./datasets/person_knows_person_0_0.csv" "./datasets/web-NotreDame.txt" "./datasets/com-lj.ungraph.txt" "./datasets/com-youtube.ungraph.txt" "./datasets/com-dblp.ungraph.txt" "./datasets/roadNet-CA.txt" "./datasets/roadNet-TX.txt")
+#GRAPH_FILES=("./datasets/Amazon0302.txt" "./datasets/wiki-Talk.txt" "./datasets/cit-Patents.txt" "./datasets/person_knows_person_0_0.csv" "./datasets/web-NotreDame.txt" "./datasets/com-lj.ungraph.txt" "./datasets/com-youtube.ungraph.txt" "./datasets/com-dblp.ungraph.txt" "./datasets/roadNet-CA.txt" "./datasets/roadNet-TX.txt")
 
-DEGREE_FILES=("./datasets/amazonDegree.txt" "./datasets/wikiDegree.txt" "./datasets/citDegree.txt" "./datasets/personDegrees.csv" "./datasets/notreDameDegree.txt" "./datasets/livejournalDegree.txt" "./datasets/youtubeDegree.txt" "./datasets/dblpDegree.txt" "./datasets/roadnetCADegree.txt" "./datasets/roadnetTXDegree.txt")
+#DEGREE_FILES=("./datasets/amazonDegree.txt" "./datasets/wikiDegree.txt" "./datasets/citDegree.txt" "./datasets/personDegrees.csv" "./datasets/notreDameDegree.txt" "./datasets/livejournalDegree.txt" "./datasets/youtubeDegree.txt" "./datasets/dblpDegree.txt" "./datasets/roadnetCADegree.txt" "./datasets/roadnetTXDegree.txt")
 
-SEP_CHARACTER=("\t" "\t" "\t" "|" "\t" "\t" "\t" "\t" "\t" "\t")
+#SEP_CHARACTER=("\t" "\t" "\t" "|" "\t" "\t" "\t" "\t" "\t" "\t")
 
-DIRECTED=("T" "T" "T" "F" "T" "F" "F" "F" "F" "F")
+#DIRECTED=("T" "T" "T" "F" "T" "F" "F" "F" "F" "F")
 
-NET_NAMES=("Amazon" "Wikipedia" "Patents" "Person" "NotreDame" "Live_Journal" "Youtube" "DBLP_co_authorship" "CA_Road_Net" "TX_Road_Net")
+#NET_NAMES=("Amazon" "Wikipedia" "Patents" "Person" "NotreDame" "Live_Journal" "Youtube" "DBLP_co_authorship" "CA_Road_Net" "TX_Road_Net")
+
+GRAPH_FILES=("./datasets/Amazon0302.txt" "./datasets/Amazon0302.txt" "./datasets/wiki-Talk.txt" "./datasets/wiki-Talk.txt" "./datasets/cit-Patents.txt" "./datasets/cit-Patents.txt" "./datasets/person_knows_person_0_0.csv" "./datasets/web-NotreDame.txt" "./datasets/web-NotreDame.txt" "./datasets/com-lj.ungraph.txt" "./datasets/com-youtube.ungraph.txt" "./datasets/com-dblp.ungraph.txt" "./datasets/roadNet-CA.txt" "./datasets/roadNet-TX.txt")
+
+DIRECTED=("T" "T" "T" "T" "T" "T" "F" "T" "T" "F" "F" "F" "F" "F")
+
+DEGREE_FILES=("./datasets/inAmazonDegrees.txt" "./datasets/outAmazonDegrees.txt" "./datasets/inWikipediaDegrees.txt" "./datasets/outWikipediaDegrees.txt" "./datasets/inPatentsDegrees.txt" "./datasets/outPatentsDegrees.txt" "./datasets/outPersonDegrees.csv" "./datasets/inNotreDameDegrees.txt" "./datasets/outNotreDameDegrees.txt" "./datasets/outLive_JournalDegrees.txt" "./datasets/outYoutubeDegrees.txt" "./datasets/outDBLP_co_authorshipDegrees.txt" "./datasets/outCA_Road_NetDegrees.txt" "./datasets/outTX_Road_NetDegrees.txt")
+
+SEP_CHARACTER=("\t" "\t" "\t" "\t" "\t" "\t" "|" "\t" "\t" "\t" "\t" "\t" "\t" "\t")
+
+NET_NAMES=("In_Amazon" "Out_Amazon" "In_Wikipedia" "Out_Wikipedia" "In_Patents" "Out_Patents" "Person" "In_NotreDame" "Out_NotreDame" "Live_Journal" "Youtube" "DBLP_co_authorship" "CA_Road_Net" "TX_Road_Net")
 
 BASE_DIR=`pwd`
 
