@@ -87,8 +87,13 @@ get_NB_line <- function(N, gamma, p, degrees){
   return(N * t1 * t2)
 }
 
+#get_DiscWeibull_line <- function(N, v, p, degrees){
+#  prob <- p^(degrees^(v)) - p^((degrees + 1)^(v)) 
+#  return (prob * N)  
+#}
+
 get_DiscWeibull_line <- function(N, v, p, degrees){
-  prob <- p^(degrees^(v)) - p^((degrees + 1)^(v)) 
+  prob <- p^((degrees^v)-1) - p^(((degrees + 1)^v)-1) 
   return (prob * N)  
 }
 

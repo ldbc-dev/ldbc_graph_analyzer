@@ -227,10 +227,15 @@ dW <- function(v, p){
   -(sum(log(p^((data$V1 - 1)^(v)) - p^((data$V1)^(v)))))
 }
 
+d1 <- function(v, p){
+  -(sum(log(p^((data$V1^v)-1) - p^(((data$V1 + 1)^v)-1))))
+}
+
+
 getDWeibullMLE <- function(vInitValue, pInitValue, lowerBound, upperBound = c(Inf, Inf)) {
   mle_DWeibull <- NULL  
   tryCatch( {    
-    mle_DWeibull <- mle(dW,#discreteWeibull,
+    mle_DWeibull <- mle(d1,#discreteWeibull,
                         start = list(v = vInitValue, p = pInitValue),
                         method = "L-BFGS-B", 
                         lower = lowerBound,
